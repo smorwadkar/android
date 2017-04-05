@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BOF-Gamification</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="notifications">Notifications</string>
+	<string name="listeneing">Listening...</string>
+	<string name="say_congrats">Say Congrats!</string>
+	<string name="see_chats">See Chats</string>
+	<string name="charts_Label">My Performance</string>
+	<string name="chats">Chats</string>
+	<string name="welcome" font="12px">Welcome</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">सजग नागरिक</string>
+    <string name="action_settings">सेटिंग्ज</string>
+    <string name="label_login_welcome">आपले स्वागत आहे</string>
+    <string name="hint_username">वापरकर्ता नाव</string>
+    <string name="hint_password">संकेतशब्द</string>
+    <string name="btn_login">लॉग-इन</string>
+    
+	<string name="label_register">नोंदणी करा</string>
+	<string name="btn_register">साइन अप करा</string>
+    <string name="hint_confirm_password">संकेतशब्द कन्फर्म करा</string>
+    <string name="hint_mobileno">मोबाइल क्रमांक</string>
+    
+    <string name="label_create_complaint">तक्रार नोंदणी</string>
+    <string name="spinner_title">विभाग निवडा</string>
+    <string name="spinner_dept_1">स्वच्छता</string>
+    <string name="spinner_dept_2">पाणी वितरण</string>
+    <string name="spinner_dept_3">वीज पुरवठा</string>
+    <string name="spinner_dept_4">बांधकाम</string>
+    <string name="spinner_dept_other">इतर</string>
+    <string name="hint_details">तपशील</string>
+    <string name="btn_submit_complaint">नोंदणी करा</string>
+    <string name="btn_capture_image">छायाचित्र</string>
+    <string name="capture">capture</string>
+    
+</resources>
