@@ -23,6 +23,7 @@
     <string name="hint_details">तपशील</string>
     <string name="btn_submit_complaint">नोंदणी करा</string>
     <string name="btn_capture_image">छायाचित्र</string>
+    <string name="btn_edit_image">बदल करा</string>
     <string name="capture">capture</string>
     
 </resources>

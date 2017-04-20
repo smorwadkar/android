@@ -33,6 +33,8 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -43,12 +45,18 @@ import com.sajag.nagarik.R;
  */
 public class CreateComplaintActivity extends Activity implements OnItemSelectedListener,OnClickListener{
 
-	private ImageView capturedImage;
+	private ImageView capturedImage1;
+	private ImageView capturedImage2;
 	private Button btnCaptureImage;
-	private static final int CAMERA_REQUEST = 1888;
 	
 	private Uri uriFilePath;
 	private Uri compressedUriFilePath;
+	private Integer imageCount = 0;
+	private ScrollView imagesScrolLayout;
+	private LinearLayout image1Layout;
+	private LinearLayout image2Layout;
+	private Button btnEditImage1;
+	private Button btnEditImage2;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -79,14 +87,40 @@ public class CreateComplaintActivity extends Activity implements OnItemSelectedL
 	      // attaching data adapter to spinner
 	      deptSpinner.setAdapter(dataAdapter);
 	      
+	      imagesScrolLayout = (ScrollView) findViewById(R.id.imagesScrolLayout);
+	      imagesScrolLayout.setVisibility(View.INVISIBLE);
+	      
 	      btnCaptureImage = (Button) findViewById(R.id.captureImgBtn);
 	      btnCaptureImage.setOnClickListener(this);
 	      
-	      capturedImage = (ImageView) findViewById(R.id.imageView1);
+	      capturedImage1 = (ImageView) findViewById(R.id.imageView1);
+	      capturedImage2 = (ImageView) findViewById(R.id.imageView2);
 	      if (uriFilePath != null){
 	    	  Bitmap photo = BitmapFactory.decodeFile(uriFilePath.getPath()); 
-	            capturedImage.setImageBitmap(photo);
+	            capturedImage1.setImageBitmap(photo);
 	      }
+	      
+	      image1Layout = (LinearLayout) findViewById(R.id.image1Layout);
+	      image2Layout = (LinearLayout) findViewById(R.id.image2Layout);
+	      image1Layout.setVisibility(View.INVISIBLE);
+	      image2Layout.setVisibility(View.INVISIBLE);
+	      
+	      btnEditImage1 =  (Button) findViewById(R.id.editImgBtn1);
+	      btnEditImage1.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				captureImage();
+			}
+		});
+	      btnEditImage2 =  (Button) findViewById(R.id.editImgBtn2);
+	      btnEditImage2.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				captureImage();
+			}
+		});
 	}
 	
 	@Override
@@ -116,22 +150,29 @@ public class CreateComplaintActivity extends Activity implements OnItemSelectedL
 			/**
 			 * To save state on rotation
 			 */
-			PackageManager packageManager = this.getPackageManager();
-			if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-			    File mainDirectory = new File(Environment.getExternalStorageDirectory(), "sajag/tmp");
-			         if (!mainDirectory.exists())
-			             mainDirectory.mkdirs();
-
-			          Calendar calendar = Calendar.getInstance();
-
-			          uriFilePath = Uri.fromFile(new File(mainDirectory, "IMG_" + calendar.getTimeInMillis() +".jpg"));
-			          Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			          intent.putExtra(MediaStore.EXTRA_OUTPUT, uriFilePath);
-			          startActivityForResult(intent, 1);
-			}
+			
+			
+			captureImage();
 		}
 	}
 	
+	private void captureImage() {
+		// TODO Auto-generated method stub
+		PackageManager packageManager = this.getPackageManager();
+		if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+		    File mainDirectory = new File(Environment.getExternalStorageDirectory(), "sajag/tmp");
+		         if (!mainDirectory.exists())
+		             mainDirectory.mkdirs();
+
+		          Calendar calendar = Calendar.getInstance();
+
+		          uriFilePath = Uri.fromFile(new File(mainDirectory, "IMG_" + calendar.getTimeInMillis() +".jpg"));
+		          Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		          intent.putExtra(MediaStore.EXTRA_OUTPUT, uriFilePath);
+		          startActivityForResult(intent, 1);
+		}
+	}
+
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {  
         if (resultCode == Activity.RESULT_OK) {  
             
@@ -159,8 +200,20 @@ public class CreateComplaintActivity extends Activity implements OnItemSelectedL
         	
         	uriFilePath = compressedUriFilePath;
         	Bitmap photo = BitmapFactory.decodeFile(compressedUriFilePath.getPath()); 
-            capturedImage.setImageBitmap(photo);
+            
+        	if(imageCount<1){
+        		capturedImage1.setImageBitmap(photo);
+        		imageCount++;
+        		image1Layout.setVisibility(View.VISIBLE);
+        	}else{
+        		capturedImage2.setImageBitmap(photo);
+        		imageCount--;
+        		image2Layout.setVisibility(View.VISIBLE);
+        		btnCaptureImage.setVisibility(View.INVISIBLE);
+        	}
+        	imagesScrolLayout.setVisibility(View.VISIBLE);
         }  
+        
     } 
 	
 	@Override

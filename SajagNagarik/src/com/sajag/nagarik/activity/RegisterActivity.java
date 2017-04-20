@@ -1,13 +1,5 @@
 package com.sajag.nagarik.activity;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
@@ -21,19 +13,21 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.sajag.nagarik.R;
-import com.sajag.nagarik.ws.DataLoader;
 
 public class RegisterActivity extends Activity implements OnClickListener {
 
@@ -57,7 +51,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View view) {
-//		new LongOperation().execute(registerURL);
+//		invokeWS();
 		if (view.getId() == registerBtn.getId()) {
 			Intent loginIntent = new Intent(getApplicationContext(),
 					LoginActivity.class);
@@ -85,122 +79,62 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		return new DefaultHttpClient(conMgr, params);
 	}
 
-	private class LongOperation extends AsyncTask<String, Void, Void> {
-		// Required initialization
-
-		private final HttpClient Client = createHttpClient();
-		private String Content;
-		private String Error = null;
-		private ProgressDialog Dialog = new ProgressDialog(
-				RegisterActivity.this);
-		String data = "";
-		int sizeData = 0;
-//		String registerURL = "http://192.168.236.1:8080/sajag-complaints-management/api/userRegistration";
+	
+	/**
+	 * Method to invoke Rest Web Services without using async task
+	 */
+	private void invokeWS() {
+		/**
+		 * Using AsyncHttp
+		 */
+		AsyncHttpClient client = new AsyncHttpClient();
+		RequestParams params = new RequestParams();
+		client.get("http://139.59.20.112:8080/backend-service-management/api/product/allCategories",params ,new AsyncHttpResponseHandler() {
+             // When the response returned by REST has Http response code '200'
+             @Override
+             public void onSuccess(String response) {
+                 // Hide Progress Dialog
+                 try {
+                         // JSON Object
+                         JSONArray objArr = new JSONArray(response);
+                         // When the JSON response has status boolean value assigned with true
+                         /*if(obj.getBoolean("status")){
+                             Toast.makeText(getApplicationContext(), "You are successfully logged in!", Toast.LENGTH_LONG).show();
+                             // Navigate to Home screen
+//                             navigatetoHomeActivity();
+                         } 
+                         // Else display error message
+                         else{
+//                             errorMsg.setText(obj.getString("error_msg"));
+                             Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
+                         }*/
+                 } catch (JSONException e) {
+                     // TODO Auto-generated catch block
+                     Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                     e.printStackTrace();
+ 
+                 }
+             }
+             // When the response returned by REST has Http response code other than '200'
+             @Override
+             public void onFailure(int statusCode, Throwable error,
+                 String content) {
+                 // Hide Progress Dialog 
+//                 prgDialog.hide();
+                 // When Http response code is '404'
+                 if(statusCode == 404){
+                     Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                 } 
+                 // When Http response code is '500'
+                 else if(statusCode == 500){
+                     Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                 } 
+                 // When Http response code other than 404, 500
+                 else{
+                     Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                 }
+             }
+         });
 		
-		
-		protected void onPreExecute() {
-
-			// NOTE: You can call UI Element here.
-			// Start Progress Dialog (Message)
-
-			Dialog.setMessage("Please wait..");
-			Dialog.show();
-
-			try {
-				// Set Request parameter
-				data += "&" + URLEncoder.encode("data", "UTF-8") + "=" + registerURL;
-
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-
-		// Call after onPreExecute method
-		protected Void doInBackground(String... urls) {
-
-			/************ Make Post Call To Web Server ***********/
-			BufferedReader reader = null;
-
-			// Send data
-			try {
-				// Send POST data request
-				String SetServerString = "";
-
-				/**
-				 * New Code starts
-				 */
-
-				DataLoader dl = new DataLoader();
-				String url = urls[0];
-				HttpResponse response = dl.secureLoadData(url);
-
-				StringBuilder sb = new StringBuilder();
-				sb.append("HEADERS:\n\n");
-
-				Header[] headers = response.getAllHeaders();
-				for (int i = 0; i < headers.length; i++) {
-					Header h = headers[i];
-					sb.append(h.getName()).append(":\t").append(h.getValue())
-							.append("\n");
-				}
-
-				InputStream is = response.getEntity().getContent();
-				StringBuilder out = new StringBuilder();
-				BufferedReader br = new BufferedReader(
-						new InputStreamReader(is));
-				for (String line = br.readLine(); line != null; line = br
-						.readLine())
-					out.append(line);
-				br.close();
-
-				sb.append("\n\nCONTENT:\n\n").append(out.toString());
-
-				Log.i("response", sb.toString());
-				/**
-				 * New code ends
-				 */
-				Content = out.toString();
-
-				System.out.println("@@@@@@@@@@@@@@@@@" + Content);
-				System.out.println(SetServerString);
-			} catch (Exception ex) {
-				Error = ex.getMessage();
-			} finally {
-				try {
-
-					reader.close();
-				}
-
-				catch (Exception ex) {
-				}
-			}
-
-			/*****************************************************/
-			return null;
-		}
-
-		protected void onPostExecute(Void unused) {
-			// NOTE: You can call UI Element here.
-
-			// Close progress dialog
-			Dialog.dismiss();
-
-			try {
-				if (Error != null) {
-
-				} else {
-
-				}
-				/****************** End Parse Response JSON Data *************/
-
-			} catch (Exception e) {
-
-				e.printStackTrace();
-			}
-
-		}
-
 	}
 }
