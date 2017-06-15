@@ -12,7 +12,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -32,12 +34,16 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.sajag.nagarik.R;
 /**
  * @author smorwadkar
@@ -57,6 +63,12 @@ public class CreateComplaintActivity extends Activity implements OnItemSelectedL
 	private LinearLayout image2Layout;
 	private Button btnEditImage1;
 	private Button btnEditImage2;
+	private Button submitBtn;
+	private Spinner deptSpinner ;
+	private EditText commentsEditText;
+	
+	private SharedPreferences sharedpreferences;
+	private String userMobile;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,7 +78,9 @@ public class CreateComplaintActivity extends Activity implements OnItemSelectedL
 	         }
 	    } 
 		setContentView(R.layout.activity_create_complaint);
-		Spinner deptSpinner = (Spinner) findViewById(R.id.dept_spinner);
+		sharedpreferences = getSharedPreferences("sajag", Context.MODE_PRIVATE);
+		userMobile = sharedpreferences.getString("userMobileNo", "All");
+		deptSpinner = (Spinner) findViewById(R.id.dept_spinner);
 		
 		// Spinner Drop down elements
 	      List<String> categories = new ArrayList<String>();
@@ -86,6 +100,8 @@ public class CreateComplaintActivity extends Activity implements OnItemSelectedL
 	      
 	      // attaching data adapter to spinner
 	      deptSpinner.setAdapter(dataAdapter);
+	      
+	      commentsEditText = (EditText) findViewById(R.id.details);
 	      
 	      imagesScrolLayout = (ScrollView) findViewById(R.id.imagesScrolLayout);
 	      imagesScrolLayout.setVisibility(View.INVISIBLE);
@@ -119,6 +135,17 @@ public class CreateComplaintActivity extends Activity implements OnItemSelectedL
 			@Override
 			public void onClick(View v) {
 				captureImage();
+			}
+		});
+	      
+	      submitBtn = (Button) findViewById(R.id.submitBtn);
+	      submitBtn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				invokeWS();
+				/*Intent listComplaints = new Intent(getApplicationContext(), ComplaintsListActivity.class);
+				startActivity(listComplaints);*/
 			}
 		});
 	}
@@ -377,5 +404,75 @@ public class CreateComplaintActivity extends Activity implements OnItemSelectedL
 	    }
 	 
 	    return inSampleSize;
+	}
+	
+	/**
+	 * Method to invoke Rest Web Services without using async task
+	 */
+	private void invokeWS() {
+		/**
+		 * Using AsyncHttp
+		 */
+		AsyncHttpClient client = new AsyncHttpClient();
+		RequestParams params = new RequestParams();
+		
+		try {
+			params.put("mobileNo",userMobile);
+			params.put("comments",commentsEditText.getText().toString());
+			params.put("complaintStatus","In Progress");
+			params.put("department_id", String.valueOf(deptSpinner.getSelectedItemPosition()));
+			params.put("image1",new File(compressedUriFilePath.getPath()),"application/octet-stream");
+			params.put("image2",new File(compressedUriFilePath.getPath()),"application/octet-stream");
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		 
+		String serverIp = getResources().getString(R.string.server_ip);
+		
+		client.post("http://" + serverIp + ":8080/sajag-complaints-management/api/request/createRequest", params, new AsyncHttpResponseHandler() {
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // JSON Object
+                  /*JSONObject userObj = new JSONObject(response);*/
+                  // When the JSON response has status boolean value assigned with true
+//                        if(userObj.getBoolean("lastName")){
+                  /*String lastName = userObj.getString("lastName");*/
+				Toast.makeText(getApplicationContext(), "Request created successfully", Toast.LENGTH_LONG).show();
+				Intent listComplaints = new Intent(getApplicationContext(), ComplaintsListActivity.class);
+				startActivity(listComplaints);
+				// Navigate to Home screen
+//                            navigatetoHomeActivity();
+//                        } 
+                  // Else display error message
+                  /*else{
+//                            errorMsg.setText(obj.getString("error_msg"));
+				Toast.makeText(getApplicationContext(), userObj.getString("error_msg"), Toast.LENGTH_LONG).show();
+                  }*/
+            	
+//            	Toast.makeText(getApplicationContext(), "User : Shivdatta is registered successfully", Toast.LENGTH_LONG).show();
+            }
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                String content) {
+                // Hide Progress Dialog 
+//                prgDialog.hide();
+                // When Http response code is '404'
+                if(statusCode == 404){
+                    Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                } 
+                // When Http response code is '500'
+                else if(statusCode == 500){
+                    Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                } 
+                // When Http response code other than 404, 500
+                else{
+                    Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+		
 	}
 }

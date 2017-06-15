@@ -33,17 +33,11 @@
 
 
             <EditText
-                android:id="@+id/username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_username"
-                android:inputType="text" />
-            <EditText
-                android:id="@+id/password"
+                android:id="@+id/mobileno"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_password"
-                android:inputType="textPassword" />
+                android:inputType="text|phone" />
         
 
         <Button
@@ -54,6 +48,21 @@
             android:layout_marginTop="4dp"
             style="@style/button_text"
             android:text="@string/btn_login" />
+        <TextView android:id="@+id/labelFirstTimeUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            style="@style/label_text_small"
+            android:text="@string/label_signup_link"
+            />
+        <Button
+            android:id="@+id/registerBtn"
+            android:background="@drawable/red_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            style="@style/button_text"
+            android:text="@string/btn_register" />
     </LinearLayout>
 
 </LinearLayout>

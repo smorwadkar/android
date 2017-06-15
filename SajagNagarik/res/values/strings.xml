@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+	
+    <string name="server_ip">139.59.57.136</string>
     <string name="app_name">सजग नागरिक</string>
     <string name="action_settings">सेटिंग्ज</string>
     <string name="label_login_welcome">आपले स्वागत आहे</string>
-    <string name="hint_username">वापरकर्ता नाव</string>
+    <string name="hint_firstname">नाव</string>
+    <string name="hint_lastname">आड नाव</string>
     <string name="hint_password">संकेतशब्द</string>
+    <string name="hint_emailId">ई-मेल आयडी</string>
     <string name="btn_login">लॉग-इन</string>
+    <string name="label_signup_link">नवीन आहात.येथे नोंदणी करा</string>
+    
     
 	<string name="label_register">नोंदणी करा</string>
 	<string name="btn_register">साइन अप करा</string>
@@ -15,6 +20,9 @@
     
     <string name="label_create_complaint">तक्रार नोंदणी</string>
     <string name="spinner_title">विभाग निवडा</string>
+    
+    <string name="hint_city">शहर</string>
+    <string name="hint_pin">पिन कोड</string>
     <string name="spinner_dept_1">स्वच्छता</string>
     <string name="spinner_dept_2">पाणी वितरण</string>
     <string name="spinner_dept_3">वीज पुरवठा</string>
@@ -26,4 +34,15 @@
     <string name="btn_edit_image">बदल करा</string>
     <string name="capture">capture</string>
     
+    <string name="bloodGroup_title">रक्त गट निवडा</string>
+    <string name="bloodGroup_type1">O+</string>
+    <string name="bloodGroup_type2">O−</string>
+    <string name="bloodGroup_type3">AB+</string>
+    <string name="bloodGroup_type4">AB−</string>
+    <string name="bloodGroup_type5">A+</string>
+    <string name="bloodGroup_type6">A−</string>
+    <string name="bloodGroup_type7">B+</string>
+    <string name="bloodGroup_type8">B−</string>
+    
+    <string name="label_complaint_details">तक्रार माहिती</string>
 </resources>
